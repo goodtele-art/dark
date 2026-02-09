@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 모바일 최적화: 터치 영역 최소 크기 */
+button, a, input[type="radio"], input[type="checkbox"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* 모바일 최적화: 폰트 크기 (줌 방지) */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* 터치 피드백 */
+button:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-in-out;
+}
