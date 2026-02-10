@@ -263,17 +263,22 @@ export default function ResultPage({
         )}
 
         {!aiLoading && result.aiInterpretation && (
-          <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-2xl shadow-2xl border border-purple-500/30 p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🤖</span>
-              <h2 className="text-xl font-semibold text-purple-300">
-                AI 맞춤 해석
+          <div className="bg-gradient-to-br from-amber-50/5 to-stone-50/5 backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-amber-300/20 p-8 md:p-10">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b-2 border-amber-300/20">
+              <span className="text-3xl">✉️</span>
+              <h2 className="text-2xl font-serif text-amber-200">
+                당신을 위한 메시지
               </h2>
             </div>
-            <div className="prose prose-invert max-w-none">
-              <p className="text-stone-200 leading-relaxed whitespace-pre-line">
+            <div className="space-y-6">
+              <p className="text-amber-50/90 leading-loose whitespace-pre-line font-serif text-[17px] tracking-wide" style={{lineHeight: '2.0'}}>
                 {result.aiInterpretation}
               </p>
+              <div className="mt-8 pt-6 border-t border-amber-300/20 text-right">
+                <p className="text-amber-300/70 font-serif text-sm italic">
+                  - 당신의 성장을 응원하는 마음을 담아
+                </p>
+              </div>
             </div>
           </div>
         )}
