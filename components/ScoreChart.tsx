@@ -63,8 +63,9 @@ export default function ScoreChart({ scores }: ScoreChartProps) {
             <CartesianGrid strokeDasharray="3 3" stroke="#44403c" />
             <XAxis
               dataKey="name"
-              tick={{ fill: "#d6d3d1", fontSize: 14 }}
+              tick={{ fill: "#d6d3d1", fontSize: 12 }}
               stroke="#57534e"
+              interval={0}
             />
             <YAxis
               domain={[0, 100]}
