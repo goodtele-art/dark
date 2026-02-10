@@ -39,14 +39,28 @@ function calculateTScore(rawScore: number, mean: number, sd: number): number {
 }
 
 /**
- * 백분위 계산
+ * T점수에서 백분위 계산 (정규분포 가정)
+ * T점수는 평균 50, 표준편차 10의 표준화된 점수
  */
-function calculatePercentile(value: number, allValues: number[]): number {
-  if (allValues.length === 0) return 50;
+function tScoreToPercentile(tScore: number): number {
+  // T점수를 Z점수로 변환: Z = (T - 50) / 10
+  const zScore = (tScore - 50) / 10;
 
-  const sortedValues = [...allValues].sort((a, b) => a - b);
-  const belowOrEqual = sortedValues.filter(v => v <= value).length;
-  return Math.round((belowOrEqual / sortedValues.length) * 100);
+  // Z점수를 백분위로 변환 (근사 공식)
+  // 정규분포 누적분포함수(CDF) 근사
+  const t = 1 / (1 + 0.2316419 * Math.abs(zScore));
+  const d = 0.3989423 * Math.exp(-zScore * zScore / 2);
+  const probability = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+
+  let percentile;
+  if (zScore >= 0) {
+    percentile = (1 - probability) * 100;
+  } else {
+    percentile = probability * 100;
+  }
+
+  // 0-100 범위로 제한
+  return Math.round(Math.max(0, Math.min(100, percentile)));
 }
 
 /**
@@ -160,48 +174,19 @@ export async function calculateNormTScores(rawScores: RawScores): Promise<TScore
 }
 
 /**
- * 규준 기반 백분위 계산
+ * 규준 기반 백분위 계산 (T점수 기준)
  */
 export async function calculateNormPercentiles(rawScores: RawScores): Promise<Percentiles> {
   try {
-    const response = await fetch('/norm-data.csv');
-    const csvText = await response.text();
-    const lines = csvText.trim().split('\n');
+    // T점수를 먼저 계산
+    const tScores = await calculateNormTScores(rawScores);
 
-    const machScores: number[] = [];
-    const narcScores: number[] = [];
-    const psycScores: number[] = [];
-    const sadiScores: number[] = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
-
-      machScores.push(
-        parseInt(values[7]) + parseInt(values[8]) + parseInt(values[9]) +
-        parseInt(values[10]) + parseInt(values[11]) + parseInt(values[12])
-      );
-
-      narcScores.push(
-        parseInt(values[13]) + parseInt(values[14]) + parseInt(values[15]) +
-        parseInt(values[16]) + parseInt(values[17]) + parseInt(values[18])
-      );
-
-      psycScores.push(
-        parseInt(values[19]) + parseInt(values[20]) + parseInt(values[21]) +
-        parseInt(values[22]) + parseInt(values[23]) + parseInt(values[24])
-      );
-
-      sadiScores.push(
-        parseInt(values[25]) + parseInt(values[26]) + parseInt(values[27]) +
-        parseInt(values[28]) + parseInt(values[29])
-      );
-    }
-
+    // T점수를 백분위로 변환
     return {
-      mach: calculatePercentile(rawScores.mach, machScores),
-      narc: calculatePercentile(rawScores.narc, narcScores),
-      psyc: calculatePercentile(rawScores.psyc, psycScores),
-      sadi: calculatePercentile(rawScores.sadi, sadiScores),
+      mach: tScoreToPercentile(tScores.mach),
+      narc: tScoreToPercentile(tScores.narc),
+      psyc: tScoreToPercentile(tScores.psyc),
+      sadi: tScoreToPercentile(tScores.sadi),
     };
   } catch (error) {
     console.error('백분위 계산 오류:', error);
@@ -237,27 +222,24 @@ export async function calculateCumulativeTScores(rawScores: RawScores): Promise<
 }
 
 /**
- * 누적 데이터 기반 백분위 계산
+ * 누적 데이터 기반 백분위 계산 (T점수 기준)
  * TODO: 데이터베이스에서 누적 데이터 조회
- * 현재는 임시로 규준 백분위에 약간의 변화를 준 값 반환
+ * 현재는 임시로 누적 T점수를 백분위로 변환
  */
 export async function calculateCumulativePercentiles(rawScores: RawScores): Promise<Percentiles> {
-  // 규준 기반 백분위 먼저 계산
-  const normPercentiles = await calculateNormPercentiles(rawScores);
+  try {
+    // 누적 T점수를 먼저 계산
+    const tScores = await calculateCumulativeTScores(rawScores);
 
-  // 임시: 백분위도 약간의 변화
-  const createVariation = (percentile: number, rawScore: number): number => {
-    const seed = rawScore * 11 % 7; // 0~6 사이 값
-    const variation = (seed - 3) * 3; // -9 ~ +9 사이 변화
-    const result = percentile + variation;
-    // 백분위는 0~100 범위로 제한
-    return Math.max(0, Math.min(100, result));
-  };
-
-  return {
-    mach: createVariation(normPercentiles.mach, rawScores.mach),
-    narc: createVariation(normPercentiles.narc, rawScores.narc),
-    psyc: createVariation(normPercentiles.psyc, rawScores.psyc),
-    sadi: createVariation(normPercentiles.sadi, rawScores.sadi),
-  };
+    // T점수를 백분위로 변환
+    return {
+      mach: tScoreToPercentile(tScores.mach),
+      narc: tScoreToPercentile(tScores.narc),
+      psyc: tScoreToPercentile(tScores.psyc),
+      sadi: tScoreToPercentile(tScores.sadi),
+    };
+  } catch (error) {
+    console.error('백분위 계산 오류:', error);
+    return { mach: 50, narc: 50, psyc: 50, sadi: 50 };
+  }
 }
