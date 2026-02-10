@@ -20,6 +20,7 @@ export default function ResultPage({
 }) {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
     const loadResult = async () => {
@@ -27,6 +28,8 @@ export default function ResultPage({
         // 세션 스토리지에서 데이터 가져오기
         const testData = sessionStorage.getItem("testData");
         const testResponses = sessionStorage.getItem("testResponses");
+        const interpretationType = sessionStorage.getItem("interpretationType");
+        const additionalInfo = sessionStorage.getItem("additionalInfo");
 
         if (!testData || !testResponses) {
           setLoading(false);
@@ -45,7 +48,7 @@ export default function ResultPage({
         // 백분위 계산 (규준 기반)
         const percentilesNorm = await calculateNormPercentiles(rawScores);
 
-        // 누적 데이터 기반 (현재는 규준과 동일)
+        // 누적 데이터 기반
         const tScoresCumulative = await calculateCumulativeTScores(rawScores);
         const percentilesCumulative = await calculateCumulativePercentiles(rawScores);
 
@@ -59,11 +62,50 @@ export default function ResultPage({
           tScoresCumulative,
           percentilesNorm,
           percentilesCumulative,
-          aiInterpretation: null, // TODO: Claude API 통합
+          aiInterpretation: null,
         };
 
         setResult(resultData);
         setLoading(false);
+
+        // AI 해석 요청
+        if (interpretationType === "ai") {
+          setAiLoading(true);
+          try {
+            const additionalData = additionalInfo
+              ? JSON.parse(additionalInfo)
+              : {};
+
+            const response = await fetch("/api/interpret", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                age: resultData.age,
+                gender: resultData.gender,
+                rawScores: resultData.rawScores,
+                tScores: resultData.tScoresNorm,
+                percentiles: resultData.percentilesNorm,
+                additionalInfo: additionalData,
+              }),
+            });
+
+            if (response.ok) {
+              const { interpretation } = await response.json();
+              setResult((prev: any) => ({
+                ...prev,
+                aiInterpretation: interpretation,
+              }));
+            } else {
+              console.error("AI 해석 요청 실패");
+            }
+          } catch (error) {
+            console.error("AI 해석 오류:", error);
+          } finally {
+            setAiLoading(false);
+          }
+        }
       } catch (error) {
         console.error("결과 로딩 오류:", error);
         setLoading(false);
@@ -202,7 +244,25 @@ export default function ResultPage({
         </div>
 
         {/* AI 맞춤 해석 */}
-        {result.aiInterpretation && (
+        {aiLoading && (
+          <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-2xl shadow-2xl border border-purple-500/30 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-2xl">🤖</span>
+              <h2 className="text-xl font-semibold text-purple-300">
+                AI 맞춤 해석
+              </h2>
+            </div>
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center space-y-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto" />
+                <p className="text-purple-300">AI가 검사 결과를 분석하고 있습니다...</p>
+                <p className="text-purple-400 text-sm">약 10-15초 소요됩니다</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!aiLoading && result.aiInterpretation && (
           <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-2xl shadow-2xl border border-purple-500/30 p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🤖</span>
