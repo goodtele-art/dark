@@ -24,17 +24,30 @@ export default function AdditionalInformation() {
     }
   }, [router]);
 
+  // 간단한 ID 생성 (SD-001 ~ SD-999 형식)
+  const generateResultId = () => {
+    // 현재 타임스탬프 기반으로 3자리 숫자 생성
+    const timestamp = Date.now();
+    const randomNum = (timestamp % 999) + 1; // 1~999
+    const paddedNum = String(randomNum).padStart(3, "0");
+    return `SD-${paddedNum}`;
+  };
+
   const handleAiInterpretation = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      // 간단한 결과 ID 생성
+      const resultId = generateResultId();
+
       // AI 해석 타입 저장
       sessionStorage.setItem("interpretationType", "ai");
       sessionStorage.setItem("additionalInfo", JSON.stringify(formData));
+      sessionStorage.setItem("resultId", resultId);
 
-      // 임시 결과 페이지 (ID 1로 하드코딩)
-      router.push("/result/1");
+      // 결과 페이지로 이동
+      router.push(`/result/${resultId}`);
     } catch (error) {
       console.error("제출 오류:", error);
       alert("제출 중 오류가 발생했습니다. 다시 시도해주세요.");
@@ -43,10 +56,15 @@ export default function AdditionalInformation() {
   };
 
   const handleGeneralInterpretation = () => {
+    // 간단한 결과 ID 생성
+    const resultId = generateResultId();
+
     // 일반 해석 타입 저장
     sessionStorage.setItem("interpretationType", "general");
     sessionStorage.setItem("additionalInfo", JSON.stringify({}));
-    router.push("/result/1");
+    sessionStorage.setItem("resultId", resultId);
+
+    router.push(`/result/${resultId}`);
   };
 
   return (

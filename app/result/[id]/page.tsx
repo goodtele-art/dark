@@ -119,10 +119,24 @@ export default function ResultPage({
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-amber-200 via-amber-100 to-stone-200 bg-clip-text text-transparent">
             검사 결과
           </h1>
-          <p className="text-stone-400">
-            결과 ID: {result.id} | {result.gender === 1 ? "남성" : "여성"},{" "}
-            {result.age}세
-          </p>
+        </div>
+
+        {/* 결과 ID 안내 */}
+        <div className="bg-gradient-to-r from-blue-900/40 to-indigo-900/40 backdrop-blur-sm rounded-2xl shadow-2xl border-2 border-blue-500/30 p-6">
+          <div className="text-center space-y-3">
+            <p className="text-blue-300 text-sm font-medium">📋 결과 조회용 ID</p>
+            <div className="bg-stone-900/50 rounded-xl px-6 py-4 inline-block">
+              <p className="text-4xl md:text-5xl font-bold text-amber-400 tracking-wider font-mono">
+                {result.id}
+              </p>
+            </div>
+            <p className="text-stone-300 text-sm">
+              이 ID를 기억하시면 나중에 결과를 다시 조회할 수 있습니다
+            </p>
+            <p className="text-stone-400 text-xs">
+              {result.gender === 1 ? "남성" : "여성"}, {result.age}세
+            </p>
+          </div>
         </div>
 
         {/* 원점수 요약 */}
