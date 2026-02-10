@@ -21,6 +21,11 @@ export default function Home() {
           <p className="text-lg text-stone-300">
             건양대학교 대학원 세미나를 위해
           </p>
+          <div className="mt-4 bg-gradient-to-r from-red-900/40 to-orange-900/40 backdrop-blur-sm rounded-xl border border-red-500/30 p-4">
+            <p className="text-red-200 text-sm md:text-base text-center leading-relaxed">
+              2월 14일 서비스를 종료합니다. 한국근거기반심리서비스센터 (<a href="https://www.ebpkorea.com" target="_blank" rel="noopener noreferrer" className="text-red-100 underline hover:text-white transition-colors">https://www.ebpkorea.com</a>)에서 다른 프로그램들을 만나보세요
+            </p>
+          </div>
         </div>
 
         {/* 검사 설명 */}
