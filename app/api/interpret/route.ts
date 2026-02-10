@@ -29,8 +29,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ interpretation });
   } catch (error) {
     console.error("API 오류:", error);
+    const errorMessage = error instanceof Error ? error.message : "알 수 없는 오류";
     return NextResponse.json(
-      { error: "AI 해석 생성 중 오류가 발생했습니다." },
+      { error: errorMessage },
       { status: 500 }
     );
   }

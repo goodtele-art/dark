@@ -1,6 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { RawScores, TScores, Percentiles } from "./types";
 
+// API 키 존재 여부 확인
+if (!process.env.ANTHROPIC_API_KEY) {
+  console.error("ANTHROPIC_API_KEY가 설정되지 않았습니다!");
+}
+
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
@@ -113,6 +118,10 @@ ${data.additionalInfo?.recentStress ? `- 나의 최근 스트레스: ${data.addi
     throw new Error("AI 응답 형식 오류");
   } catch (error) {
     console.error("Claude API 오류:", error);
-    throw new Error("AI 해석 생성 중 오류가 발생했습니다.");
+    // 더 자세한 에러 메시지 반환
+    if (error instanceof Error) {
+      throw new Error(`AI 해석 생성 중 오류: ${error.message}`);
+    }
+    throw new Error("AI 해석 생성 중 알 수 없는 오류가 발생했습니다.");
   }
 }
