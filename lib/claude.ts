@@ -96,22 +96,35 @@ ${data.additionalInfo?.recentStress ? `- 나의 최근 스트레스: ${data.addi
 - 각 섹션의 제목은 그대로 유지하되, 내용만 작성해주세요.`;
 
   try {
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 2000,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+    // Vercel 환경에서 fetch를 직접 사용
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY || "",
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 2000,
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      }),
     });
 
-    const textContent = message.content.find(
-      (block) => block.type === "text"
-    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`API 응답 오류 (${response.status}): ${JSON.stringify(errorData)}`);
+    }
 
-    if (textContent && textContent.type === "text") {
+    const data = await response.json();
+    const textContent = data.content?.find((block: any) => block.type === "text");
+
+    if (textContent && textContent.text) {
       return textContent.text;
     }
 
