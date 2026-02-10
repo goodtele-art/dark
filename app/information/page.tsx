@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 export default function AdditionalInformation() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    personality: "",
-    growthBackground: "",
-    stressFactors: "",
-    otherInfo: "",
+    myPersonality: "",
+    childhoodEvent: "",
+    comfortableClients: "",
+    difficultClients: "",
+    recentStress: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -96,63 +97,78 @@ export default function AdditionalInformation() {
             </p>
           </div>
 
-          {/* 성격 특성 */}
+          {/* 내가 생각하는 나의 성격 */}
           <div className="space-y-3">
-            <label htmlFor="personality" className="block text-sm font-semibold text-amber-300">
-              성격 특성
+            <label htmlFor="myPersonality" className="block text-sm font-semibold text-amber-300">
+              내가 생각하는 나의 성격
             </label>
             <textarea
-              id="personality"
-              value={formData.personality}
-              onChange={(e) => setFormData({ ...formData, personality: e.target.value })}
+              id="myPersonality"
+              value={formData.myPersonality}
+              onChange={(e) => setFormData({ ...formData, myPersonality: e.target.value })}
               className="w-full px-4 py-3 rounded-xl border-2 border-stone-600 bg-stone-900/50 text-stone-200 placeholder-stone-500 focus:border-amber-500 focus:outline-none transition-colors resize-none"
               rows={3}
               placeholder="예: 내향적, 신중함, 완벽주의 등"
             />
           </div>
 
-          {/* 성장 과정 */}
+          {/* 어린 시절 생각나는 중요한 사건 */}
           <div className="space-y-3">
-            <label htmlFor="growthBackground" className="block text-sm font-semibold text-amber-300">
-              성장 과정
+            <label htmlFor="childhoodEvent" className="block text-sm font-semibold text-amber-300">
+              어린 시절 생각나는 중요한 사건
             </label>
             <textarea
-              id="growthBackground"
-              value={formData.growthBackground}
-              onChange={(e) => setFormData({ ...formData, growthBackground: e.target.value })}
+              id="childhoodEvent"
+              value={formData.childhoodEvent}
+              onChange={(e) => setFormData({ ...formData, childhoodEvent: e.target.value })}
               className="w-full px-4 py-3 rounded-xl border-2 border-stone-600 bg-stone-900/50 text-stone-200 placeholder-stone-500 focus:border-amber-500 focus:outline-none transition-colors resize-none"
               rows={3}
               placeholder="예: 가족 환경, 주요 경험 등"
             />
           </div>
 
-          {/* 스트레스 요인 */}
+          {/* 나에게 잘 이해되는 내담자 */}
           <div className="space-y-3">
-            <label htmlFor="stressFactors" className="block text-sm font-semibold text-amber-300">
-              스트레스 요인
+            <label htmlFor="comfortableClients" className="block text-sm font-semibold text-amber-300">
+              나에게 잘 이해되는 내담자
             </label>
             <textarea
-              id="stressFactors"
-              value={formData.stressFactors}
-              onChange={(e) => setFormData({ ...formData, stressFactors: e.target.value })}
+              id="comfortableClients"
+              value={formData.comfortableClients}
+              onChange={(e) => setFormData({ ...formData, comfortableClients: e.target.value })}
               className="w-full px-4 py-3 rounded-xl border-2 border-stone-600 bg-stone-900/50 text-stone-200 placeholder-stone-500 focus:border-amber-500 focus:outline-none transition-colors resize-none"
               rows={3}
-              placeholder="예: 업무 압박, 대인관계 문제 등"
+              placeholder="예: 불안한 내담자, 우울한 내담자 등"
             />
           </div>
 
-          {/* 기타 정보 */}
+          {/* 나에게 불편한, 또는 어려운 내담자 */}
           <div className="space-y-3">
-            <label htmlFor="otherInfo" className="block text-sm font-semibold text-amber-300">
-              기타 정보
+            <label htmlFor="difficultClients" className="block text-sm font-semibold text-amber-300">
+              나에게 불편한, 또는 어려운 내담자
             </label>
             <textarea
-              id="otherInfo"
-              value={formData.otherInfo}
-              onChange={(e) => setFormData({ ...formData, otherInfo: e.target.value })}
+              id="difficultClients"
+              value={formData.difficultClients}
+              onChange={(e) => setFormData({ ...formData, difficultClients: e.target.value })}
               className="w-full px-4 py-3 rounded-xl border-2 border-stone-600 bg-stone-900/50 text-stone-200 placeholder-stone-500 focus:border-amber-500 focus:outline-none transition-colors resize-none"
               rows={3}
-              placeholder="상담자에게 알리고 싶은 추가 정보"
+              placeholder="예: 공격적인 내담자, 경계선 성격장애 내담자 등"
+            />
+          </div>
+
+          {/* 나의 최근 스트레스 */}
+          <div className="space-y-3">
+            <label htmlFor="recentStress" className="block text-sm font-semibold text-amber-300">
+              나의 최근 스트레스
+            </label>
+            <textarea
+              id="recentStress"
+              value={formData.recentStress}
+              onChange={(e) => setFormData({ ...formData, recentStress: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl border-2 border-stone-600 bg-stone-900/50 text-stone-200 placeholder-stone-500 focus:border-amber-500 focus:outline-none transition-colors resize-none"
+              rows={3}
+              placeholder="예: 업무 압박, 대인관계 문제 등"
             />
           </div>
 

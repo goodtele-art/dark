@@ -12,10 +12,11 @@ interface InterpretationRequest {
   tScores: TScores;
   percentiles: Percentiles;
   additionalInfo?: {
-    personality?: string;
-    growthBackground?: string;
-    stressFactors?: string;
-    otherInfo?: string;
+    myPersonality?: string;
+    childhoodEvent?: string;
+    comfortableClients?: string;
+    difficultClients?: string;
+    recentStress?: string;
   };
 }
 
@@ -26,13 +27,14 @@ export async function generateInterpretation(
 
   const prompt = `당신은 임상심리학자로서 다크 테트라드(Dark Tetrad) 성격 검사 결과를 해석하는 전문가입니다.
 
-## 내담자 정보
+## 상담자(검사 실시자) 정보
 - 성별: ${genderText}
 - 나이: ${data.age}세
-${data.additionalInfo?.personality ? `- 성격 특성: ${data.additionalInfo.personality}` : ""}
-${data.additionalInfo?.growthBackground ? `- 성장 과정: ${data.additionalInfo.growthBackground}` : ""}
-${data.additionalInfo?.stressFactors ? `- 스트레스 요인: ${data.additionalInfo.stressFactors}` : ""}
-${data.additionalInfo?.otherInfo ? `- 기타 정보: ${data.additionalInfo.otherInfo}` : ""}
+${data.additionalInfo?.myPersonality ? `- 내가 생각하는 나의 성격: ${data.additionalInfo.myPersonality}` : ""}
+${data.additionalInfo?.childhoodEvent ? `- 어린 시절 생각나는 중요한 사건: ${data.additionalInfo.childhoodEvent}` : ""}
+${data.additionalInfo?.comfortableClients ? `- 나에게 잘 이해되는 내담자: ${data.additionalInfo.comfortableClients}` : ""}
+${data.additionalInfo?.difficultClients ? `- 나에게 불편한, 또는 어려운 내담자: ${data.additionalInfo.difficultClients}` : ""}
+${data.additionalInfo?.recentStress ? `- 나의 최근 스트레스: ${data.additionalInfo.recentStress}` : ""}
 
 ## 검사 결과
 ### 원점수 (Raw Scores)
@@ -53,13 +55,13 @@ ${data.additionalInfo?.otherInfo ? `- 기타 정보: ${data.additionalInfo.other
 - T점수 >60: 높음
 
 ## 요청사항
-다음 구조로 상담자를 위한 해석을 작성해주세요:
+다음 구조로 상담자 교육을 위한 해석을 작성해주세요:
 
 ### 1. 전체적인 성격 프로필 (150-200자)
-4가지 척도의 전반적인 패턴을 종합하여 내담자의 성격 특징을 요약해주세요.
+4가지 척도의 전반적인 패턴을 종합하여 검사 실시자(상담자)의 성격 특징을 요약해주세요.
 
 ### 2. 척도별 세부 해석 (각 척도당 100-150자)
-각 척도별로 T점수와 내담자 정보를 고려한 구체적인 해석을 제공해주세요.
+각 척도별로 T점수와 실시자 정보를 고려한 구체적인 해석을 제공해주세요.
 
 #### 마키아벨리즘
 [해석]
@@ -73,18 +75,19 @@ ${data.additionalInfo?.otherInfo ? `- 기타 정보: ${data.additionalInfo.other
 #### 사디즘
 [해석]
 
-### 3. 상담 시 고려사항 (150-200자)
-상담자가 내담자를 만날 때 특별히 주의하거나 고려해야 할 점을 제시해주세요.
+### 3. 상담 관계에서의 시사점 (150-200자)
+실시자의 성격 특성이 상담 관계와 치료적 접근에 어떤 영향을 미칠 수 있는지 설명해주세요. 특히 '잘 이해되는 내담자'와 '어려운 내담자' 정보를 고려하여 분석해주세요.
 
-### 4. 강점과 발전 영역 (100-150자)
-내담자의 잠재적 강점과 발전 가능한 영역을 균형있게 제시해주세요.
+### 4. 자기 성찰과 발전 방향 (150-200자)
+상담자로서 자기 인식과 전문성 발전을 위한 구체적인 제안을 해주세요. 최근 스트레스가 상담 수행에 미칠 수 있는 영향도 고려해주세요.
 
 ---
 
 **중요**:
-- 교육용 도구이므로 진단적 표현은 지양하고, 특성과 경향성 중심으로 기술해주세요.
-- 내담자 정보를 최대한 활용하여 맥락화된 해석을 제공해주세요.
-- 상담자가 이해하기 쉽고 실용적인 언어를 사용해주세요.
+- 이것은 **상담자 자신을 위한 교육용 검사**입니다. 내담자가 아닌 상담자 본인의 성격 특성을 분석하는 것입니다.
+- 진단적 표현은 지양하고, 자기 이해와 전문성 향상을 위한 통찰 중심으로 기술해주세요.
+- 실시자가 제공한 정보(성격, 어린 시절 경험, 편한/어려운 내담자, 스트레스)를 최대한 활용하여 맥락화된 해석을 제공해주세요.
+- 상담자의 강점을 인정하면서도 자기 성찰을 촉진하는 균형 잡힌 톤을 유지해주세요.
 - 각 섹션의 제목은 그대로 유지하되, 내용만 작성해주세요.`;
 
   try {
